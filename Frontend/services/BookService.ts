@@ -46,3 +46,25 @@ export default async function getBooks() {
     throw error;
   }
 }
+
+export async function getBookById(id: number) {
+  try {
+    const response = await apiClient.get(`/Books/${id}`);
+    const bookById = {
+      id: response.data.id,
+      name: response.data.name,
+      author: response.data.author,
+      editor: response.data.editor,
+      year: response.data.year,
+      read: response.data.read,
+      favorite: response.data.favorite,
+      rating: response.data.rating,
+      cover: response.data.cover,
+      theme: response.data.theme,
+    };
+    return bookById;
+  } catch (error) {
+    console.error("Erreur lors de la recuperation du livre par ID:", error);
+    throw error;
+  }
+}
