@@ -1,6 +1,7 @@
+import { Book } from "@/models/BookModel";
 import apiClient from "@/api/apiClient";
 
-export default async function getBooks() {
+export async function getBooks() {
   try {
     const response = await apiClient.get("/Books");
 
@@ -65,6 +66,16 @@ export async function getBookById(id: number) {
     return bookById;
   } catch (error) {
     console.error("Erreur lors de la recuperation du livre par ID:", error);
+    throw error;
+  }
+}
+
+export async function postBook(newBook: Partial<Book>) {
+  try {
+    const response = await apiClient.post("/Books", newBook);
+    return response.data as Book;
+  } catch (error) {
+    console.error("Erreur lors de la création du livre:", error);
     throw error;
   }
 }

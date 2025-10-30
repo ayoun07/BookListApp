@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import getBooks from "@/services/BookService";
+import {getBooks} from "@/services/BookService";
 import { Book } from "@/models/BookModel";
 
 export function useFetchBooks() {

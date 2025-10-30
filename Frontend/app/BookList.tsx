@@ -9,6 +9,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons"; 
 
 export default function BookList() {
   const { data: books, isLoading, error } = useFetchBooks();
@@ -32,6 +33,14 @@ export default function BookList() {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.createButton}
+        onPress={() => router.push("/BookCreate")}
+      >
+        <Ionicons name="add-circle-outline" size={24} color="#fff" />
+        <Text style={styles.createButtonText}>Créer un nouveau livre</Text>
+      </TouchableOpacity>
+
       <FlatList
         data={books}
         keyExtractor={(item) => item.id.toString()}
@@ -39,7 +48,7 @@ export default function BookList() {
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() =>
-              router.navigate({
+              router.push({
                 pathname: "/BookListById",
                 params: { id: item.id },
               })
@@ -74,5 +83,18 @@ const styles = StyleSheet.create({
   errorText: {
     color: "#FF4D4D",
     fontWeight: "bold",
+  },
+  createButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#2563EB",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  createButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    marginLeft: 8,
   },
 });
