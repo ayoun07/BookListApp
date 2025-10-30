@@ -1,7 +1,9 @@
 import BookFormById from "@/components/BookByIdComponent";
 import { useFetchBookById } from "@/hooks/useFetchBookById";
-import { useLocalSearchParams } from "expo-router";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
 
 export default function BookFromById() {
   const { id } = useLocalSearchParams();
@@ -40,9 +42,19 @@ export default function BookFromById() {
 
   return (
     <View style={styles.container}>
-      {/* ✅ On passe toutes les props nécessaires au composant */}
+      <TouchableOpacity
+        onPress={() =>
+          router.push({
+            pathname: "/BookUpdate",
+            params: { id: bookById.id.toString() },
+          })
+        }
+        style={styles.editButton}
+      >
+        <Ionicons name="create-outline" size={24} color="#007AFF" />
+      </TouchableOpacity>
       <BookFormById
-        title={bookById.name}
+        name={bookById.name}
         author={bookById.author}
         editor={bookById.editor}
         year={bookById.year}
@@ -76,5 +88,16 @@ const styles = StyleSheet.create({
   errorText: {
     color: "#FF4D4D",
     fontWeight: "bold",
+  },
+  editButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "flex-end",
+    backgroundColor: "#E8F0FE",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginTop: 8,
+    marginRight: 10,
   },
 });

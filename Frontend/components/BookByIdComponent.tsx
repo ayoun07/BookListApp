@@ -1,21 +1,12 @@
 import { useRouter } from "expo-router";
 import { Button, Text, View, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // ✅ Import des icônes Expo
+import { Book } from "@/models/BookModel";
 
-interface BookProps {
-  title: string;
-  author: string;
-  editor: string;
-  year: number;
-  read: boolean;
-  favorite: boolean;
-  rating: number;
-  cover: string;
-  theme: string;
-}
+type BookDisplay = Omit<Book, "id">;
 
 export default function BookFormById({
-  title,
+  name,
   author,
   editor,
   year,
@@ -24,12 +15,13 @@ export default function BookFormById({
   rating,
   cover,
   theme,
-}: BookProps) {
+}: BookDisplay) {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+
+      <Text style={styles.name}>{name}</Text>
 
       <Text style={styles.text}>Auteur : {author}</Text>
       <Text style={styles.text}>Éditeur : {editor}</Text>
@@ -81,7 +73,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  title: {
+  name: {
     fontSize: 22,
     fontWeight: "bold",
     color: "#111",

@@ -8,10 +8,9 @@ export function useDeleteBook() {
   return useMutation({
     mutationFn: async (id: number) => {
           const result = await deleteBook(id);
-          console.log("Deleting book id:", id);
       return result;
     },
-    onSuccess: (data, id) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["books"] });
     },
     onError: (error: any, id) => {

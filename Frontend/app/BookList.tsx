@@ -62,7 +62,7 @@ export default function BookList() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => deleteMutation.mutate(item.id)} // ✅ On passe l’id du livre
+              onPress={() => deleteMutation.mutate(item.id)} 
               style={styles.deleteButton}
             >
               <Ionicons name="trash-outline" size={24} color="#FF4D4D" />

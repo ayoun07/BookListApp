@@ -81,14 +81,22 @@ export async function deleteBook(id: number) {
   }
 }
 
-
-
 export async function postBook(newBook: Partial<Book>) {
   try {
     const response = await apiClient.post("/Books", newBook);
     return response.data as Book;
   } catch (error) {
     console.error("Erreur lors de la création du livre:", error);
+    throw error;
+  }
+}
+
+export async function putBook(id:number, newBook: Partial<Book>) {
+  try {
+    const response = await apiClient.put(`/Books/${id}`, newBook);
+    return response.data as Book;
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du livre", error);
     throw error;
   }
 }
