@@ -70,6 +70,19 @@ export async function getBookById(id: number) {
   }
 }
 
+
+export async function deleteBook(id: number) {
+  try {
+    const response = await apiClient.delete(`/Books/${id}`);
+    return response.status === 200 || response.status === 204;
+  } catch (error: any) {
+    console.error("❌ Erreur lors de la suppression :", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+
+
 export async function postBook(newBook: Partial<Book>) {
   try {
     const response = await apiClient.post("/Books", newBook);
