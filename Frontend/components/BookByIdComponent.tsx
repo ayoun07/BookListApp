@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { Button, Text, View, StyleSheet } from "react-native";
+import { Button, Text, View, StyleSheet, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // ✅ Import des icônes Expo
 import { Book } from "@/models/BookModel";
 
@@ -20,6 +20,11 @@ export default function BookFormById({
 
   return (
     <View style={styles.container}>
+            <Image
+              style={styles.cover}
+              source={{ uri: cover }}
+              alt="textIMAGEMANQUANTE"
+            />
 
       <Text style={styles.name}>{name}</Text>
 
@@ -54,7 +59,7 @@ export default function BookFormById({
       <Text style={styles.text}>Couverture : {cover}</Text>
 
       <View style={styles.buttonContainer}>
-        <Button title="⬅️ Retour à la liste" onPress={() => router.back()} />
+        <Button title="⬅️ Retour à la liste" onPress={() => router.push("/BookList")} />
       </View>
     </View>
   );
@@ -92,5 +97,9 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 20,
+  },
+  cover: {
+    height: 50,
+    width: 50,
   },
 });

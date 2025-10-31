@@ -45,12 +45,13 @@ export default function BookList() {
 
       <FlatList
         data={books}
+        horizontal
+        showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.bookRow}>
+          <View style={styles.bookCard}>
             <TouchableOpacity
-              style={{ flex: 1 }}
-              activeOpacity={0.7}
+              activeOpacity={0.8}
               onPress={() =>
                 router.push({
                   pathname: "/BookListById",
@@ -58,18 +59,22 @@ export default function BookList() {
                 })
               }
             >
-              <BookForm title={item.name} author={item.author} />
+              <BookForm
+                name={item.name}
+                author={item.author}
+                cover={item.cover}
+              />
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => deleteMutation.mutate(item.id)} 
+              onPress={() => deleteMutation.mutate(item.id)}
               style={styles.deleteButton}
             >
-              <Ionicons name="trash-outline" size={24} color="#FF4D4D" />
+              <Ionicons name="trash-outline" size={22} color="#FF4D4D" />
             </TouchableOpacity>
           </View>
         )}
-        contentContainerStyle={{ paddingBottom: 16 }}
+        contentContainerStyle={styles.carouselContainer}
       />
     </View>
   );
@@ -78,52 +83,88 @@ export default function BookList() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: "#f0f0f0",
+    padding: 26,
+    backgroundColor: "#F9FAFB", // gris très clair pour un fond doux
+  },
+  carouselContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 24,
   },
   center: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#F9FAFB",
   },
   loadingText: {
-    marginTop: 8,
+    marginTop: 10,
     color: "#2563EB",
-    fontWeight: "bold",
+    fontWeight: "600",
+    fontSize: 16,
   },
   errorText: {
-    color: "#FF4D4D",
-    fontWeight: "bold",
+    color: "#DC2626",
+    fontWeight: "600",
+    fontSize: 16,
   },
   createButton: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "#2563EB",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
+    paddingVertical: 14,
+    borderRadius: 12,
+    marginBottom: 20,
+    shadowColor: "#2563EB",
+    shadowOpacity: 0.25,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 4,
   },
   createButtonText: {
     color: "#fff",
-    fontWeight: "bold",
+    fontWeight: "700",
     marginLeft: 8,
+    fontSize: 16,
+    letterSpacing: 0.5,
   },
   bookRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 8,
-    marginBottom: 12,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 14,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
+    shadowRadius: 6,
     elevation: 3,
   },
   deleteButton: {
-    padding: 8,
+    backgroundColor: "#FEE2E2",
+    borderRadius: 10,
+    padding: 10,
+    marginLeft: 8,
+    shadowColor: "#FF4D4D",
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  bookCard: {
+    width: 180,
+    height: 260,
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    marginRight: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 3,
+    padding: 12,
+    justifyContent: "space-between",
   },
 });
+

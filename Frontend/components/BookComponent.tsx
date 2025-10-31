@@ -1,14 +1,17 @@
-import { View, Text, StyleSheet } from "react-native";
+import { Book } from "@/models/BookModel";
+import { View, Text, StyleSheet, Image } from "react-native";
 
-interface BookProps {
-  title: string;
-  author: string;
-}
+type BookDisplay = Omit<Book, "id"|"editor"|"year"|"read"|"favorite"|"rating"|"theme">;
 
-export default function BookForm({ title, author }: BookProps) {
+export default function BookForm({ name, author, cover }: BookDisplay) {
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>{title}</Text>
+      <Image
+        style={styles.cover}
+        source={{ uri: cover }}
+        alt="textIMAGEMANQUANTE"
+      />
+      <Text style={styles.name}>{name}</Text>
       <Text style={styles.author}>Auteur : {author}</Text>
     </View>
   );
@@ -24,9 +27,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3, 
+    elevation: 3,
   },
-  title: {
+  name: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#111",
@@ -35,5 +38,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#555",
     marginTop: 4,
+  },
+  cover: {
+    height: 50,
+    width: 50,
   },
 });
