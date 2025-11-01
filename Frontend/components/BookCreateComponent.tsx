@@ -1,19 +1,8 @@
+import { Book } from "@/models/BookModel";
 import { Text, View, StyleSheet } from "react-native";
 
-interface BookProps {
-  title: string;
-  author: string;
-  editor: string;
-  year: number;
-  read: boolean;
-  favorite: boolean;
-  rating: number;
-  cover: string;
-  theme: string;
-}
-
 export default function BookCreateComponent({
-  title,
+  name,
   author,
   editor,
   year,
@@ -22,10 +11,10 @@ export default function BookCreateComponent({
   rating,
   cover,
   theme,
-}: BookProps) {
+}: Book) {
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.name}>{name}</Text>
       <Text style={styles.subtitle}>Auteur : {author}</Text>
       <Text style={styles.text}>Éditeur : {editor}</Text>
       <Text style={styles.text}>Année : {year}</Text>
@@ -50,7 +39,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  title: {
+  name: {
     fontSize: 20,
     fontWeight: "bold",
     color: "#111",
