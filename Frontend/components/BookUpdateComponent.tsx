@@ -19,10 +19,10 @@ export default function BookUpdateComponent({
         <Text style={styles.text}>Éditeur : {editor}</Text>
         <Text style={styles.text}>Année : {year ?? "Inconnue"}</Text>
         <Text style={styles.text}>
-          Lecture : {read ? "✅ Lu" : "❌ Non lu"}
+          Lecture : {read ? "Lu" : "Non lu"}
         </Text>
         <Text style={styles.text}>
-          Favori : {favorite ? "⭐ Oui" : "✖ Non"}
+          Favori : {favorite ? "Oui" : "Non"}
         </Text>
         <Text style={styles.text}>
           Note : {rating ? `${rating}/5` : "Aucune note"}

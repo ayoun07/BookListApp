@@ -76,7 +76,7 @@ export async function deleteBook(id: number) {
     const response = await apiClient.delete(`/Books/${id}`);
     return response.status === 200 || response.status === 204;
   } catch (error: any) {
-    console.error("❌ Erreur lors de la suppression :", error.response?.data || error.message);
+    console.error("Erreur lors de la suppression :", error.response?.data || error.message);
     throw error;
   }
 }

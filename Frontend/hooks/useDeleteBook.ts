@@ -14,8 +14,8 @@ export function useDeleteBook() {
       queryClient.invalidateQueries({ queryKey: ["books"] });
     },
     onError: (error: any, id) => {
-      console.error("❌ Erreur lors de la suppression du livre ID:", id);
-      console.error("❌ Détails:", error.response?.data || error.message);
+      console.error("Erreur lors de la suppression du livre ID:", id);
+      console.error("Détails:", error.response?.data || error.message);
     },
   });
 }

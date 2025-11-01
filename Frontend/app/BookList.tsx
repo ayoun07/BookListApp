@@ -1,7 +1,10 @@
 import BookForm from "@/components/BookComponent";
 import { useFetchBooks } from "@/hooks/useFetchBooks";
 import { useDeleteBook } from "@/hooks/useDeleteBook";
+import { useFavorites } from "@/contexts/FavoritesContext";
+import { useUpdateFavorite } from "@/hooks/useUpdateFavorites";
 import { router } from "expo-router";
+import React from "react";
 import {
   FlatList,
   Text,
@@ -14,7 +17,10 @@ import { Ionicons } from "@expo/vector-icons";
 
 export default function BookList() {
   const { data: books, isLoading, error } = useFetchBooks();
-  const deleteMutation = useDeleteBook(); 
+  const deleteMutation = useDeleteBook();
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const updateFavoriteMutation = useUpdateFavorite();
+
 
   if (isLoading) {
     return (
@@ -33,6 +39,13 @@ export default function BookList() {
     );
   }
 
+  const handleToggleFavorite = (bookId: number) => {
+    const currentState = isFavorite(bookId);
+    const newFavoriteState = !currentState;
+    toggleFavorite(bookId); 
+    updateFavoriteMutation.mutate({ bookId, favorite: newFavoriteState });
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -48,32 +61,47 @@ export default function BookList() {
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.bookCard}>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() =>
-                router.push({
-                  pathname: "/BookListById",
-                  params: { id: item.id },
-                })
-              }
-            >
-              <BookForm
-                name={item.name}
-                author={item.author}
-                cover={item.cover}
-              />
-            </TouchableOpacity>
+        renderItem={({ item }) => {
+          const isFav = isFavorite(item.id);
 
-            <TouchableOpacity
-              onPress={() => deleteMutation.mutate(item.id)}
-              style={styles.deleteButton}
-            >
-              <Ionicons name="trash-outline" size={22} color="#FF4D4D" />
-            </TouchableOpacity>
-          </View>
-        )}
+          return (
+            <View style={styles.bookCard}>
+              <TouchableOpacity
+                style={styles.favoriteButton}
+                onPress={() => handleToggleFavorite(item.id)}
+              >
+                <Ionicons
+                  name={isFav ? "heart" : "heart-outline"}
+                  size={26}
+                  color={isFav ? "#FF4D4D" : "#888"}
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() =>
+                  router.push({
+                    pathname: "/BookListById",
+                    params: { id: item.id },
+                  })
+                }
+              >
+                <BookForm
+                  name={item.name}
+                  author={item.author}
+                  cover={item.cover}
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => deleteMutation.mutate(item.id)}
+                style={styles.deleteButton}
+              >
+                <Ionicons name="trash-outline" size={22} color="#FF4D4D" />
+              </TouchableOpacity>
+            </View>
+          );
+        }}
         contentContainerStyle={styles.carouselContainer}
       />
     </View>
@@ -84,7 +112,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 26,
-    backgroundColor: "#F9FAFB", // gris très clair pour un fond doux
+    backgroundColor: "#F9FAFB",
   },
   carouselContainer: {
     paddingHorizontal: 16,
@@ -128,25 +156,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     letterSpacing: 0.5,
   },
-  bookRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 14,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 3,
-  },
   deleteButton: {
     backgroundColor: "#FEE2E2",
     borderRadius: 10,
     padding: 10,
-    marginLeft: 8,
+    marginTop: 8,
+    alignSelf: "center",
     shadowColor: "#FF4D4D",
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -166,5 +181,10 @@ const styles = StyleSheet.create({
     padding: 12,
     justifyContent: "space-between",
   },
+  favoriteButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 2,
+  },
 });
-

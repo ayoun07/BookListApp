@@ -18,8 +18,8 @@ export default function BookCreateComponent({
       <Text style={styles.subtitle}>Auteur : {author}</Text>
       <Text style={styles.text}>Éditeur : {editor}</Text>
       <Text style={styles.text}>Année : {year}</Text>
-      <Text style={styles.text}>Lecture : {read ? "✅ Lu" : "❌ Non lu"}</Text>
-      <Text style={styles.text}>Favori : {favorite ? "⭐ Oui" : "✖ Non"}</Text>
+      <Text style={styles.text}>Lecture : {read ? "Lu" : "Non lu"}</Text>
+      <Text style={styles.text}>Favori : {favorite ? "Oui" : "Non"}</Text>
       <Text style={styles.text}>Note : {rating}/5</Text>
       <Text style={styles.text}>Couverture : {cover}</Text>
       <Text style={styles.text}>Thème : {theme}</Text>

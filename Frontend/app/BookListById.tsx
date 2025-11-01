@@ -1,8 +1,10 @@
 import BookFormById from "@/components/BookByIdComponent";
 import NotesById from "@/components/Notes/NotesByIdComponent";
-import NoteCreateComponent from "@/components/Notes/NoteCreateComponent"; // ✅ import ajouté
+import NoteCreateComponent from "@/components/Notes/NoteCreateComponent";
 import { useFetchBookById } from "@/hooks/useFetchBookById";
 import { useFetchNoteById } from "@/hooks/Notes/useFetchNoteById";
+import { useFavorites } from "@/contexts/FavoritesContext";
+import { useUpdateFavorite } from "@/hooks/useUpdateFavorites";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import {
@@ -17,6 +19,8 @@ import {
 export default function BookFromById() {
   const { id } = useLocalSearchParams();
   const bookId = Number(id);
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const updateFavoriteMutation = useUpdateFavorite();
 
   const {
     data: bookById,
@@ -29,6 +33,7 @@ export default function BookFromById() {
     isLoading: isLoadingNotes,
     error: errorNotes,
   } = useFetchNoteById(bookId);
+
 
   if (isLoadingBook || isLoadingNotes) {
     return (
@@ -57,30 +62,53 @@ export default function BookFromById() {
     );
   }
 
+  const isFav = isFavorite(bookId);
+
+  const handleToggleFavorite = () => {
+    const newFavoriteState = !isFav;
+    toggleFavorite(bookId);
+    updateFavoriteMutation.mutate({ bookId, favorite: newFavoriteState });
+  };
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        onPress={() =>
-          router.push({
-            pathname: "/BookUpdate",
-            params: { id: bookById.id.toString() },
-          })
-        }
-        style={styles.editButton}
-      >
-        <Ionicons name="create-outline" size={24} color="#007AFF" />
-      </TouchableOpacity>
+      <View style={styles.topButtons}>
+        <TouchableOpacity
+          onPress={handleToggleFavorite}
+          style={styles.favoriteButton}
+        >
+          <Ionicons
+            name={isFav ? "heart" : "heart-outline"}
+            size={28}
+            color={isFav ? "#FF4D4D" : "#888"}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: "/BookUpdate",
+              params: { id: bookById.id.toString() },
+            })
+          }
+          style={styles.editButton}
+        >
+          <Ionicons name="create-outline" size={24} color="#007AFF" />
+        </TouchableOpacity>
+      </View>
+
       <BookFormById
         name={bookById.name}
         author={bookById.author}
         editor={bookById.editor}
         year={bookById.year}
         read={bookById.read}
-        favorite={bookById.favorite}
+        favorite={isFav}
         rating={bookById.rating}
         cover={bookById.cover}
         theme={bookById.theme}
       />
+
       <Text style={styles.notesTitle}>Notes :</Text>
       {notes && notes.length > 0 ? (
         <FlatList
@@ -96,7 +124,7 @@ export default function BookFromById() {
           Aucune note disponible pour ce livre.
         </Text>
       )}
-      <NoteCreateComponent bookId={bookId} content={""} dateISO={""} />{" "}
+      <NoteCreateComponent bookId={bookId} content={""} dateISO={""} />
     </View>
   );
 }
@@ -122,16 +150,31 @@ const styles = StyleSheet.create({
     color: "#FF4D4D",
     fontWeight: "bold",
   },
+  topButtons: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 8,
+    marginRight: 10,
+  },
+  favoriteButton: {
+    backgroundColor: "#FFF",
+    padding: 8,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
   editButton: {
     flexDirection: "row",
     alignItems: "center",
-    alignSelf: "flex-end",
     backgroundColor: "#E8F0FE",
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 8,
-    marginTop: 8,
-    marginRight: 10,
   },
   notesTitle: {
     marginTop: 20,

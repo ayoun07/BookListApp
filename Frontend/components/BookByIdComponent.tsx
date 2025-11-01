@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { Button, Text, View, StyleSheet, Image } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // ✅ Import des icônes Expo
+import { Ionicons } from "@expo/vector-icons"; 
 import { Book } from "@/models/BookModel";
 
 type BookDisplay = Omit<Book, "id">;

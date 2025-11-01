@@ -12,7 +12,6 @@ import useFetchBookCreate from "@/hooks/useFetchBookCreate";
 export default function BookFormCreate() {
   const { mutate: createBook, error, data } = useFetchBookCreate();
 
-  // State pour chaque champ
   const [name, setName] = useState("");
   const [author, setAuthor] = useState("");
   const [editor, setEditor] = useState("");

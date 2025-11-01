@@ -164,7 +164,7 @@ export default function BookFormUpdate() {
         onChangeText={(text) => handleChange("theme", text)}
       />
 
-      <Button title="💾 Enregistrer" onPress={handleSubmit} />
+      <Button title="Enregistrer" onPress={handleSubmit} />
     </View>
   );
 }
