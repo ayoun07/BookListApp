@@ -1,9 +1,9 @@
 import { Book } from "@/models/BookModel";
 import { View, Text, StyleSheet, Image } from "react-native";
 
-type BookDisplay = Omit<Book, "id"|"editor"|"year"|"read"|"favorite"|"rating"|"theme">;
+type BookDisplay = Omit<Book, "id"|"editor"|"year"|"read"|"favorite"|"rating">;
 
-export default function BookForm({ name, author, cover }: BookDisplay) {
+export default function BookForm({ name, author, cover, theme }: BookDisplay) {
   return (
     <View style={styles.card}>
       <Image
@@ -13,6 +13,7 @@ export default function BookForm({ name, author, cover }: BookDisplay) {
       />
       <Text style={styles.name}>{name}</Text>
       <Text style={styles.author}>Auteur : {author}</Text>
+      <Text style={styles.author}>Thème : {theme}</Text>
     </View>
   );
 }
