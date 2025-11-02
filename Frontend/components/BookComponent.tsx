@@ -1,47 +1,107 @@
 import { Book } from "@/models/BookModel";
 import { View, Text, StyleSheet, Image } from "react-native";
 
-type BookDisplay = Omit<Book, "id"|"editor"|"year"|"read"|"favorite"|"rating">;
+type BookDisplay = Omit<
+  Book,
+  "id" | "editor" | "year" | "read" | "favorite" | "rating"
+>;
 
 export default function BookForm({ name, author, cover, theme }: BookDisplay) {
   return (
     <View style={styles.card}>
-      <Image
-        style={styles.cover}
-        source={{ uri: cover }}
-        alt="textIMAGEMANQUANTE"
-      />
-      <Text style={styles.name}>{name}</Text>
-      <Text style={styles.author}>Auteur : {author}</Text>
-      <Text style={styles.author}>Thème : {theme}</Text>
+      <View style={styles.coverWrap}>
+        <Image
+          style={styles.cover}
+          source={{ uri: cover }}
+          alt="Couverture indisponible"
+        />
+      </View>
+
+      <Text style={styles.name} numberOfLines={2}>
+        {name}
+      </Text>
+
+      <Text style={styles.author} numberOfLines={1}>
+        Auteur : <Text style={styles.authorStrong}>{author}</Text>
+      </Text>
+
+      <View style={styles.themePill}>
+        <Text style={styles.themeText} numberOfLines={1}>
+          {theme}
+        </Text>
+      </View>
     </View>
   );
 }
 
+const PALETTE = {
+  card: "#FFFFFF",
+  text: "#111827",
+  textMuted: "#6B7280",
+  border: "#E5E7EB",
+  chipBg: "#F3F4F6",
+  chipText: "#374151",
+  shadow: "rgba(17, 24, 39, 0.12)",
+};
+
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
-    padding: 16,
+    backgroundColor: PALETTE.card,
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: PALETTE.border,
+    shadowColor: PALETTE.shadow,
+    shadowOpacity: 0.8,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 16,
+    elevation: 5,
+  },
+
+  // Enveloppe pour forcer un ratio 2:3 et arrondir proprement
+  coverWrap: {
+    width: "100%",
+    aspectRatio: 2 / 3, // ratio “livre”
     borderRadius: 12,
-    marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#111",
-  },
-  author: {
-    fontSize: 14,
-    color: "#555",
-    marginTop: 4,
+    overflow: "hidden",
+    backgroundColor: "#F8FAFC", // léger fond pour le fade-in
+    marginBottom: 10,
   },
   cover: {
-    height: 50,
-    width: 50,
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+
+  name: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: PALETTE.text,
+    marginTop: 2,
+  },
+  author: {
+    fontSize: 13,
+    color: PALETTE.textMuted,
+    marginTop: 6,
+  },
+  authorStrong: {
+    color: PALETTE.text,
+    fontWeight: "600",
+  },
+
+  themePill: {
+    alignSelf: "flex-start",
+    marginTop: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+    backgroundColor: PALETTE.chipBg,
+    borderWidth: 1,
+    borderColor: PALETTE.border,
+  },
+  themeText: {
+    fontSize: 12,
+    color: PALETTE.chipText,
+    fontWeight: "600",
   },
 });

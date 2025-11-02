@@ -28,8 +28,7 @@ export default function BookFromById() {
   const { toggleFavorite, isFavorite } = useFavorites();
   const updateFavoriteMutation = useUpdateFavorite();
   const updateRatingMutation = useUpdateRating();
-  const { getRating, setRating: setLocalRating } =
-    useRatings();
+  const { getRating, setRating: setLocalRating } = useRatings();
 
   const {
     data: bookById,
@@ -88,14 +87,12 @@ export default function BookFromById() {
   };
 
   const handleChangeRating = (next: number) => {
-    setRating(next); 
-    setLocalRating(bookId, next); 
+    setRating(next);
+    setLocalRating(bookId, next);
     updateRatingMutation.mutate({ bookId, rating: next });
   };
 
-  const SCREEN_WIDTH = Dimensions.get("window").width;
   const NOTE_CARD_GAP = 12;
-  const NOTE_CARD_WIDTH = Math.round(SCREEN_WIDTH * 0.78);
 
   return (
     <ScrollView
@@ -128,6 +125,7 @@ export default function BookFromById() {
         </TouchableOpacity>
       </View>
 
+      {/* Carte des détails du livre */}
       <View style={styles.detailsCard}>
         <BookFormById
           name={bookById.name}
@@ -140,8 +138,14 @@ export default function BookFromById() {
           cover={bookById.cover}
           theme={bookById.theme}
         />
+      </View>
 
-        <View style={styles.ratingSection}>
+      {/* Section Notes + Bloc rating à gauche (à la Fnac) */}
+      <Text style={styles.notesTitle}>Notes</Text>
+
+      <View style={styles.notesRow}>
+        {/* Colonne gauche : bloc rating */}
+        <View style={styles.ratingCard}>
           <View style={styles.ratingHeader}>
             <Text style={styles.ratingTitle}>Votre note</Text>
             <Text style={styles.ratingValue}>{rating}/5</Text>
@@ -164,35 +168,34 @@ export default function BookFromById() {
               : "Touchez pour noter • Appui long pour remettre à 0"}
           </Text>
         </View>
+
+        {/* Colonne droite : carrousel des notes */}
+        <View style={styles.notesCol}>
+          {notes && notes.length > 0 ? (
+            <FlatList
+              horizontal
+              data={notes}
+              keyExtractor={(item) => item.dateISO}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.carouselContent}
+              ItemSeparatorComponent={() => (
+                <View style={{ width: NOTE_CARD_GAP }} />
+              )}
+              renderItem={({ item }) => (
+                <View style={styles.noteCard}>
+                  <NotesById content={item.content} dateISO={item.dateISO} />
+                </View>
+              )}
+            />
+          ) : (
+            <Text style={styles.noNotes}>
+              Aucune note disponible pour ce livre.
+            </Text>
+          )}
+        </View>
       </View>
 
-      <Text style={styles.notesTitle}>Notes</Text>
-
-      {notes && notes.length > 0 ? (
-        <FlatList
-          horizontal
-          data={notes}
-          keyExtractor={(item) => item.dateISO}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.carouselContent}
-          ItemSeparatorComponent={() => (
-            <View style={{ width: NOTE_CARD_GAP }} />
-          )}
-          snapToAlignment="start"
-          decelerationRate="fast"
-          snapToInterval={NOTE_CARD_WIDTH + NOTE_CARD_GAP}
-          renderItem={({ item }) => (
-            <View style={[styles.noteCard, { width: NOTE_CARD_WIDTH }]}>
-              <NotesById content={item.content} dateISO={item.dateISO} />
-            </View>
-          )}
-        />
-      ) : (
-        <Text style={styles.noNotes}>
-          Aucune note disponible pour ce livre.
-        </Text>
-      )}
-
+      {/* Création de note */}
       <View style={styles.createNoteWrapper}>
         <NoteCreateComponent bookId={bookId} content={""} dateISO={""} />
       </View>
@@ -223,6 +226,7 @@ const ELEVATION = {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: PALETTE.bg },
   scrollContent: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 28 },
+
   center: {
     flex: 1,
     justifyContent: "center",
@@ -283,11 +287,30 @@ const styles = StyleSheet.create({
     ...ELEVATION,
   },
 
-  ratingSection: {
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: PALETTE.border,
+  /* --- Titre Notes --- */
+  notesTitle: {
+    marginTop: 22,
+    marginBottom: 12,
+    fontSize: 20,
+    fontWeight: "700",
+    color: PALETTE.text,
+    letterSpacing: 0.3,
+  },
+
+  /* --- Disposition 2 colonnes : rating à gauche, notes à droite --- */
+  notesRow: {
+    flexDirection: "row",
+    gap: 12,
+  },
+
+  ratingCard: {
+    width: Math.min(220, Math.round(Dimensions.get("window").width * 0.36)),
+    backgroundColor: PALETTE.card,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: PALETTE.border,
+    padding: 12,
+    ...ELEVATION,
   },
   ratingHeader: {
     flexDirection: "row",
@@ -299,33 +322,35 @@ const styles = StyleSheet.create({
   ratingValue: { fontSize: 14, fontWeight: "600", color: PALETTE.textMuted },
   ratingHint: { marginTop: 6, fontSize: 12, color: PALETTE.textMuted },
 
-  notesTitle: {
-    marginTop: 22,
-    marginBottom: 12,
-    fontSize: 20,
-    fontWeight: "700",
-    color: PALETTE.text,
-    letterSpacing: 0.3,
+  notesCol: {
+    flex: 1,
+    minHeight: 140,
+    backgroundColor: "transparent",
   },
 
+  /* --- Carrousel de notes (dans la colonne droite) --- */
   carouselContent: { paddingVertical: 4, paddingRight: 4 },
   noteCard: {
+    width: Math.round(Dimensions.get("window").width * 0.48), // largeur confortable dans la colonne droite
     backgroundColor: PALETTE.card,
     borderRadius: 14,
     borderWidth: 1,
     borderColor: PALETTE.border,
     paddingVertical: 10,
     paddingHorizontal: 12,
+    marginRight: 12,
     ...ELEVATION,
   },
 
   noNotes: {
     fontSize: 14,
     color: PALETTE.textMuted,
-    textAlign: "center",
+    textAlign: "left",
     marginTop: 12,
     lineHeight: 20,
     fontStyle: "italic",
   },
+
+  /* --- Création de note --- */
   createNoteWrapper: { marginTop: 16 },
 });
