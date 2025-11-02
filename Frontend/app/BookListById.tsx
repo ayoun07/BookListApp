@@ -5,6 +5,8 @@ import { useFetchBookById } from "@/hooks/useFetchBookById";
 import { useFetchNoteById } from "@/hooks/Notes/useFetchNoteById";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { useUpdateFavorite } from "@/hooks/useUpdateFavorites";
+import { useUpdateRating } from "@/hooks/useUpdaterating";
+import { useRatings } from "@/contexts/RatingsContext";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import {
@@ -17,12 +19,17 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
+import React from "react";
+import RatingStars from "@/components/Stars/RatingStars";
 
 export default function BookFromById() {
   const { id } = useLocalSearchParams();
   const bookId = Number(id);
   const { toggleFavorite, isFavorite } = useFavorites();
   const updateFavoriteMutation = useUpdateFavorite();
+  const updateRatingMutation = useUpdateRating();
+  const { getRating, setRating: setLocalRating } =
+    useRatings();
 
   const {
     data: bookById,
@@ -35,6 +42,15 @@ export default function BookFromById() {
     isLoading: isLoadingNotes,
     error: errorNotes,
   } = useFetchNoteById(bookId);
+
+  const localOverride = getRating(bookId);
+  const serverRating = bookById?.rating ?? 0;
+  const displayRating = localOverride ?? serverRating;
+
+  const [rating, setRating] = React.useState<number>(displayRating);
+  React.useEffect(() => {
+    setRating(localOverride ?? serverRating);
+  }, [localOverride, serverRating]);
 
   if (isLoadingBook || isLoadingNotes) {
     return (
@@ -69,6 +85,12 @@ export default function BookFromById() {
     const newFavoriteState = !isFav;
     toggleFavorite(bookId);
     updateFavoriteMutation.mutate({ bookId, favorite: newFavoriteState });
+  };
+
+  const handleChangeRating = (next: number) => {
+    setRating(next); 
+    setLocalRating(bookId, next); 
+    updateRatingMutation.mutate({ bookId, rating: next });
   };
 
   const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -114,10 +136,34 @@ export default function BookFromById() {
           year={bookById.year}
           read={bookById.read}
           favorite={isFav}
-          rating={bookById.rating}
+          rating={rating}
           cover={bookById.cover}
           theme={bookById.theme}
         />
+
+        <View style={styles.ratingSection}>
+          <View style={styles.ratingHeader}>
+            <Text style={styles.ratingTitle}>Votre note</Text>
+            <Text style={styles.ratingValue}>{rating}/5</Text>
+          </View>
+
+          <RatingStars
+            value={rating}
+            onChange={handleChangeRating}
+            size={28}
+            colorActive="#F59E0B"
+            colorInactive="#9CA3AF"
+            spacing={6}
+            allowReset
+            readOnly={updateRatingMutation.isPending}
+          />
+
+          <Text style={styles.ratingHint}>
+            {updateRatingMutation.isPending
+              ? "Enregistrement…"
+              : "Touchez pour noter • Appui long pour remettre à 0"}
+          </Text>
+        </View>
       </View>
 
       <Text style={styles.notesTitle}>Notes</Text>
@@ -175,16 +221,8 @@ const ELEVATION = {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: PALETTE.bg,
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 28,
-  },
-
+  container: { flex: 1, backgroundColor: PALETTE.bg },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 28 },
   center: {
     flex: 1,
     justifyContent: "center",
@@ -245,6 +283,22 @@ const styles = StyleSheet.create({
     ...ELEVATION,
   },
 
+  ratingSection: {
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: PALETTE.border,
+  },
+  ratingHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 6,
+  },
+  ratingTitle: { fontSize: 16, fontWeight: "700", color: PALETTE.text },
+  ratingValue: { fontSize: 14, fontWeight: "600", color: PALETTE.textMuted },
+  ratingHint: { marginTop: 6, fontSize: 12, color: PALETTE.textMuted },
+
   notesTitle: {
     marginTop: 22,
     marginBottom: 12,
@@ -254,10 +308,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
 
-  carouselContent: {
-    paddingVertical: 4,
-    paddingRight: 4,
-  },
+  carouselContent: { paddingVertical: 4, paddingRight: 4 },
   noteCard: {
     backgroundColor: PALETTE.card,
     borderRadius: 14,
@@ -276,8 +327,5 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontStyle: "italic",
   },
-
-  createNoteWrapper: {
-    marginTop: 16,
-  },
+  createNoteWrapper: { marginTop: 16 },
 });

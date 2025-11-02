@@ -3,6 +3,7 @@ import { useFetchBooks } from "@/hooks/useFetchBooks";
 import { useDeleteBook } from "@/hooks/useDeleteBook";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { useUpdateFavorite } from "@/hooks/useUpdateFavorites";
+import { useRatings } from "@/contexts/RatingsContext";
 import { router } from "expo-router";
 import React from "react";
 import {
@@ -21,6 +22,7 @@ export default function BookList() {
   const deleteMutation = useDeleteBook();
   const { toggleFavorite, isFavorite } = useFavorites();
   const updateFavoriteMutation = useUpdateFavorite();
+  const { getRating } = useRatings?.() ?? { getRating: undefined };
 
   const handleToggleFavorite = (bookId: number) => {
     const currentState = isFavorite(bookId);
@@ -37,6 +39,13 @@ export default function BookList() {
     () => (books || []).filter((b) => !isFavorite(b.id)),
     [books, isFavorite]
   );
+
+  const getDisplayRating = (book: any) =>
+    (getRating ? getRating(book.id) : undefined) ?? book.rating ?? 0;
+
+  const getNotesCount = (book: any) =>
+    (book as any).notesCount ??
+    (Array.isArray((book as any).notes) ? (book as any).notes.length : 0);
 
   if (isLoading) {
     return (
@@ -78,6 +87,9 @@ export default function BookList() {
             ItemSeparatorComponent={() => <View style={{ width: 14 }} />}
             renderItem={({ item }) => {
               const isFav = isFavorite(item.id);
+              const rating = getDisplayRating(item);
+              const notesCount = getNotesCount(item);
+
               return (
                 <View style={styles.carouselCard}>
                   <TouchableOpacity
@@ -106,6 +118,19 @@ export default function BookList() {
                       cover={item.cover}
                     />
                   </TouchableOpacity>
+
+                  <View style={styles.metaRow}>
+                    <View style={styles.ratingBadge}>
+                      <Ionicons name="star" size={14} color="#F59E0B" />
+                      <Text style={styles.ratingText}>
+                        {Number(rating) || 0}
+                      </Text>
+                    </View>
+                    <Text style={styles.dot}>·</Text>
+                    <Text style={styles.notesText}>
+                      {notesCount} {notesCount > 1 ? "notes" : "note"}
+                    </Text>
+                  </View>
 
                   <TouchableOpacity
                     onPress={() => deleteMutation.mutate(item.id)}
@@ -137,6 +162,9 @@ export default function BookList() {
       ListHeaderComponent={ListHeader}
       renderItem={({ item }) => {
         const isFav = isFavorite(item.id);
+        const rating = getDisplayRating(item);
+        const notesCount = getNotesCount(item);
+
         return (
           <View style={styles.gridCard}>
             <TouchableOpacity
@@ -166,6 +194,17 @@ export default function BookList() {
               />
             </TouchableOpacity>
 
+            <View style={styles.metaRow}>
+              <View style={styles.ratingBadge}>
+                <Ionicons name="star" size={14} color="#F59E0B" />
+                <Text style={styles.ratingText}>{Number(rating) || 0}</Text>
+              </View>
+              <Text style={styles.dot}>·</Text>
+              <Text style={styles.notesText}>
+                {notesCount} {notesCount > 1 ? "notes" : "note"}
+              </Text>
+            </View>
+
             <TouchableOpacity
               onPress={() => deleteMutation.mutate(item.id)}
               style={styles.deleteFab}
@@ -182,7 +221,7 @@ export default function BookList() {
 
 const { width } = Dimensions.get("window");
 const GRID_GAP = 14;
-const GRID_CARD_WIDTH = Math.floor((width - 24 * 2 - GRID_GAP) / 2); // padding horizontal 24 + gap
+const GRID_CARD_WIDTH = Math.floor((width - 24 * 2 - GRID_GAP) / 2);
 
 const PALETTE = {
   bg: "#F9FAFB",
@@ -318,5 +357,39 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderWidth: 1,
     borderColor: "#FECACA",
+  },
+
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: PALETTE.border,
+    gap: 6,
+  },
+  ratingBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#FFF7ED",
+    borderColor: "#FED7AA",
+    borderWidth: 1,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 999,
+  },
+  ratingText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#9A3412",
+  },
+  dot: {
+    color: PALETTE.textMuted,
+    marginHorizontal: 2,
+  },
+  notesText: {
+    fontSize: 12,
+    color: PALETTE.textMuted,
   },
 });

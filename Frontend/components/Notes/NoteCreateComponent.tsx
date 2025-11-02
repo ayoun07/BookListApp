@@ -48,7 +48,7 @@ export default function NoteCreateComponent({ bookId }: Note) {
         </Text>
       )}
       {createNoteMutation.isSuccess && (
-        <Text style={styles.success}>✅ Note ajoutée !</Text>
+        <Text style={styles.success}>Note ajoutée !</Text>
       )}
     </View>
   );
